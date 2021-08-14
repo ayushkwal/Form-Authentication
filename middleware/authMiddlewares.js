@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const data = require('../controllers/authControllers');
+const controller = require('../controllers/authControllers');
 const mongoose = require('mongoose');
 
 const requireAuth = (req, res, next) => {
@@ -25,19 +25,19 @@ const checkUser = (req, res, next) => {
     if (token) {
         jwt.verify(token, 'ayush secret key', async(err, decodedToken) => {
             if (err) {
-                res.locals.userid = 'hello';
+                res.locals.username = '';
                 next();
 
             } else {
                 console.log(decodedToken.id);
-                let user = await data.findById(decodedToken.id);
-                console.log(user);
-                res.locals.userid = 'hello';
+                let user = await controller.data.findOne({_id:decodedToken.id});
+                console.log(user,'ssssss');
+                res.locals.username = user.username;
                 next();
             }
         });
     } else {
-        res.locals.userid = null;
+        res.locals.username = '';
         next();
     }
 }

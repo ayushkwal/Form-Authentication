@@ -10,7 +10,6 @@
     h1 {
         text-align: center;
         color: purple;
-        font-family: cursive;
         font-size: 60px;
     }
     
@@ -61,6 +60,7 @@
         <div class='err' id='emailError'>
 
         </div>
+        <input type="text" name="username" placeholder="Name">
         <input type="text" name="email" placeholder="Email">
         <div class='err' id='passwordError'>
 
@@ -81,13 +81,15 @@
         passworderror.textContent = '';
         const email = form.email.value;
         const password = form.password.value;
+        const username = form.username.value
         e.preventDefault();
         try {
             const res = await fetch('/signup', {
                 method: 'post',
                 body: JSON.stringify({
                     email,
-                    password
+                    password,
+                    username
                 }),
                 headers: {
                     'Content-Type': 'application/json'

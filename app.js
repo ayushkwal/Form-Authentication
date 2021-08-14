@@ -19,13 +19,17 @@ app.use(cookieParser());
 
 
 
-controller(app);
-// app.get('*', checkUser);
+controller.fun(app);
+app.get('*', checkUser);
+app.get('/', requireAuth, (req, res) => {
+    res.render('home.ejs');
+});
 app.get('/home', requireAuth, (req, res) => {
     res.render('home.ejs');
 });
 
 //listen server
-app.listen(80, () => {
+const port = process.env.PORT||3000
+app.listen(port, () => {
     console.log('Listening');
 });

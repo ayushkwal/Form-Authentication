@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
+const {password} = require('../keys')
 
 //Handling errors
 function handleErrors(err) {
@@ -68,7 +69,7 @@ function createToken(id) {
 
 //mongoose connection
 // I hide the password for security purpose.
-mongoose.connect('mongodb+srv://ayush:<password>@cluster0.jawu5.mongodb.net/Authentication?retryWrites=true&w=majority');
+mongoose.connect(`mongodb+srv://ayush:${password}@cluster0.jawu5.mongodb.net/Authentication?retryWrites=true&w=majority`);
 
 //creating blueprint of data i.e. Schema
 const userSchema = new mongoose.Schema({
@@ -79,7 +80,11 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         validate: [isEmail, 'Please enter valid email address']
     },
-
+    username: {
+        type: String,
+        required: [true, 'Please enter username'],
+        lowercase: true,
+    },
     password: {
         type: String,
         required: [true, 'Please enter password'],
@@ -125,13 +130,13 @@ userSchema.post('save', function(doc, next) { //both doc and next will be parame
 //creating model
 // mongoose.model('database name',userSchema);
 const data = mongoose.model('detail', userSchema);
-module.exports = data;
+module.exports.data = data;
 
 
 
 
 
-module.exports = function(app) {
+module.exports.fun = function(app) {
     app.get('/login', function(req, res) {
 
         res.render('login.ejs');
@@ -141,10 +146,10 @@ module.exports = function(app) {
     app.post('/signup', urlencodedparser, async function(req, res) {
         console.log(req.body);
         // var a = req.body;
-        const { email, password } = req.body;
+        const { email, password,username } = req.body;
         try {
 
-            const saving = await data.create({ email, password });
+            const saving = await data.create({ email, password,username });
             const token = createToken(saving._id); //ID of that with which you are saving  
             res.cookie('jwt', token, { httpOnly: true, maxAge: 3 * 24 * 60 * 60 });
             res.json({ saving: saving._id });
@@ -172,8 +177,8 @@ module.exports = function(app) {
             res.cookie('jwt', token, { httpOnly: true, maxAge: 3 * 24 * 60 * 60 });
 
             if (saving) {
-                console.log('saving._id ')
-                res.json({ saving: saving._id });
+                console.log('saving._id ',saving)
+                res.json({ saving: saving._id,username:saving.username });
             } else {
                 console.log('kindly connect to Internet');
             }
