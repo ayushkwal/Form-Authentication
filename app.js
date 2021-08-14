@@ -19,6 +19,8 @@ app.use(cookieParser());
 
 
 
+
+
 controller.fun(app);
 app.get('*', checkUser);
 app.get('/', requireAuth, (req, res) => {
